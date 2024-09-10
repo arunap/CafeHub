@@ -1,0 +1,28 @@
+version: "3.8"
+
+name: cafehub-mgt-system
+services:
+  cafehub-api:
+    container_name: cafehub-api
+    build:
+      context: .
+      dockerfile: CafeHub.Api/Dockerfile
+    ports:
+      - "9000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  frontend:
+    container_name: cafehub-frontend
+    build:
+      context: ./cafehub.ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    stdin_open: true
+    tty: true
