@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Button, Typography, TextField, IconButton, Divider } from "@mui/material";
+import { Box, Button, Typography, TextField, IconButton, Divider, Avatar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { AgGridReact } from "ag-grid-react";
@@ -10,6 +10,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
 import DeleteConfirmation from "../FormControls/DeleteConfirmation";
+import { deepOrange } from "@mui/material/colors";
 
 // API call to fetch cafes
 const fetchCafes = async () => {
@@ -41,7 +42,26 @@ const Cafe = () => {
   const { data: cafes, isLoading, error } = useQuery({ queryKey: ["cafes", locationFilter], queryFn: fetchCafes });
 
   const columns = [
-    { headerName: "Logo", field: "logo", autoHeight: true, cellRenderer: (params) => <img src={params.value} alt="logo" style={{ height: "50px" }} />, flex: 1 },
+    // { headerName: "Logo", field: "logo", autoHeight: true, cellRenderer: (params) => <img src={params.value} alt="logo" style={{ height: "50px" }} />, flex: 1 },
+    {
+      headerName: "Logo",
+      field: "logo",
+      autoHeight: true,
+      cellRenderer: (params) => (
+        <Avatar
+          src={params.value}
+          alt={params.value}
+          sx={{
+            bgcolor: "#f0f0f0", 
+            width: 40, 
+            height: 40, 
+            borderRadius: "50%",
+            margin: "5px",
+          }}
+        />
+      ),
+      flex: 1,
+    },
     { headerName: "Name", field: "name", flex: 2 },
     { headerName: "Description", field: "description", flex: 4 },
     {
@@ -71,9 +91,9 @@ const Cafe = () => {
       ),
     },
   ];
-  
+
   const filteredCafes = cafes?.filter((cafe) => cafe.location.toLowerCase().includes(locationFilter.toLowerCase()));
-  
+
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <DeleteConfirmation open={isDialogOpen} handleClose={handleCloseDialog} entityId={entityId} entityType={entityType} />
