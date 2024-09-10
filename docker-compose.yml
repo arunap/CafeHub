@@ -1,32 +1,5 @@
-version: "3.8"
-
 name: cafehub-mgt-system
 services:
-  cafehub-api:
-    container_name: cafehub-api
-    build:
-      context: .
-      dockerfile: CafeHub.Api/Dockerfile
-    ports:
-      - "9000:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-
-  frontend:
-    container_name: cafehub-frontend
-    build:
-      context: ./cafehub.ui
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
-    stdin_open: true
-    tty: true
-
   mysql:
     image: mysql:8.0
     container_name: cafehub-mysql-db
@@ -42,6 +15,45 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - my_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  cafehub-api:
+    container_name: cafehub-api
+    build:
+      context: .
+      dockerfile: CafeHub.Api/Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "9000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=cafehub-mysql-db;Database=cafehub_db;User=user;Password=user_password;
+    networks:
+      - my_network
+
+  frontend:
+    container_name: cafehub-frontend
+    build:
+      context: ./cafehub.ui
+      dockerfile: Dockerfile
+    depends_on:
+      - cafehub-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    stdin_open: true
+    tty: true
 
 volumes:
   mysql_data:
