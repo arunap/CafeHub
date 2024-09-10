@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Sunrise Cafe",
+        "description": "A cozy spot for breakfast and brunch.",
+        "employees": 15,
+        "location": "New York, NY"
+    },
+    {
+        "id": 2,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Moonlight Diner",
+        "description": "Late night meals and a great atmosphere.",
+        "employees": 22,
+        "location": "Los Angeles, CA"
+    },
+    {
+        "id": 3,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Brew Haven",
+        "description": "A paradise for coffee lovers.",
+        "employees": 10,
+        "location": "Seattle, WA"
+    },
+    {
+        "id": 4,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Green Leaf Bistro",
+        "description": "Organic and fresh, with a focus on sustainability.",
+        "employees": 18,
+        "location": "San Francisco, CA"
+    },
+    {
+        "id": 5,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Urban Grind",
+        "description": "A trendy cafe with a focus on craft coffee.",
+        "employees": 12,
+        "location": "Portland, OR"
+    },
+    {
+        "id": 6,
+        "logo": "https://via.placeholder.com/50",
+        "name": "The Daily Grind",
+        "description": "A popular spot for commuters and early risers.",
+        "employees": 20,
+        "location": "Chicago, IL"
+    },
+    {
+        "id": 7,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Java Junction",
+        "description": "A quaint cafe with a friendly atmosphere.",
+        "employees": 8,
+        "location": "Boston, MA"
+    },
+    {
+        "id": 8,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Coastal Cafe",
+        "description": "Enjoy fresh pastries and ocean views.",
+        "employees": 16,
+        "location": "Miami, FL"
+    },
+    {
+        "id": 9,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Caffeine Fix",
+        "description": "Quick service with a focus on quality.",
+        "employees": 14,
+        "location": "Houston, TX"
+    },
+    {
+        "id": 10,
+        "logo": "https://via.placeholder.com/50",
+        "name": "Sunset Roasters",
+        "description": "A cafe known for its artisan roasted coffee.",
+        "employees": 9,
+        "location": "Denver, CO"
+    }
+]
