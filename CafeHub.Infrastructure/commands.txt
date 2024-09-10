@@ -1,0 +1,1 @@
+dotnet ef migrations add InitialTables --project ..\CafeHub.Infrastructure\ --startup-project .

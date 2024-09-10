@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeHub.Api", "CafeHub.Api\CafeHub.Api.csproj", "{C1E68D02-2DA6-4F7E-A5EB-7FCE755EFE1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BB3D3631-FEFF-43CE-AD8F-69E946F78ED2}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeHub.Application", "CafeHub.Application\CafeHub.Application.csproj", "{FA3681CE-6E9B-4E52-B3EC-A32CCB97AAFC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeHub.Core", "CafeHub.Core\CafeHub.Core.csproj", "{966A4485-556A-4E28-AA2A-A6F5D6E7E231}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeHub.Infrastructure", "CafeHub.Infrastructure\CafeHub.Infrastructure.csproj", "{A6E0AA19-CBEA-4F9C-931E-76869600F921}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1E68D02-2DA6-4F7E-A5EB-7FCE755EFE1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1E68D02-2DA6-4F7E-A5EB-7FCE755EFE1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1E68D02-2DA6-4F7E-A5EB-7FCE755EFE1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1E68D02-2DA6-4F7E-A5EB-7FCE755EFE1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA3681CE-6E9B-4E52-B3EC-A32CCB97AAFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA3681CE-6E9B-4E52-B3EC-A32CCB97AAFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA3681CE-6E9B-4E52-B3EC-A32CCB97AAFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA3681CE-6E9B-4E52-B3EC-A32CCB97AAFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{966A4485-556A-4E28-AA2A-A6F5D6E7E231}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{966A4485-556A-4E28-AA2A-A6F5D6E7E231}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{966A4485-556A-4E28-AA2A-A6F5D6E7E231}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{966A4485-556A-4E28-AA2A-A6F5D6E7E231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6E0AA19-CBEA-4F9C-931E-76869600F921}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E0AA19-CBEA-4F9C-931E-76869600F921}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6E0AA19-CBEA-4F9C-931E-76869600F921}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E0AA19-CBEA-4F9C-931E-76869600F921}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD8B2E42-DC54-46BE-BDF7-4A9C18CF9468}
+	EndGlobalSection
+EndGlobal
