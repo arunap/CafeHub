@@ -31,9 +31,9 @@ namespace CafeHub.Infrastructure
             base.OnModelCreating(modelBuilder);
 
             // Add soft delete global query filter
-             modelBuilder.AddSoftDeleteQueryFilter();
+            modelBuilder.AddSoftDeleteQueryFilter();
 
-           
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

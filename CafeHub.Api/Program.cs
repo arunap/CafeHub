@@ -3,6 +3,7 @@ using CafeHub.Application;
 using CafeHub.Application.Common.Contracts;
 using CafeHub.Infrastructure;
 using CafeHub.Infrastructure.Seeds;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     using var sp = app.Services.CreateScope();
+
+    if (!app.Configuration.GetValue<bool>("UseInMemoryDatabase"))
+    {
+        var databaseService = sp.ServiceProvider.GetRequiredService<CafeManagementDbContext>();
+        databaseService.Database.Migrate();
+    }
     var cafeSeeds = sp.ServiceProvider.GetRequiredService<CafeDataInitializer>();
     await cafeSeeds.SeedAsync();
 

@@ -7,13 +7,16 @@ namespace CafeHub.Infrastructure
     // This factory is used by EF Core when running design-time commands like Add-Migration and Update-Database.
     public class CafeManagementDbContextFactory : IDesignTimeDbContextFactory<CafeManagementDbContext>
     {
-        private readonly IConfiguration _configuration;
-        public CafeManagementDbContextFactory(IConfiguration configuration) => _configuration = configuration;
-
         public CafeManagementDbContext CreateDbContext(string[] args)
         {
+            // Build configuration
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
             // get connectionstring
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             // Configure shared CafeManagementDbContext
             var optionsBuilder = new DbContextOptionsBuilder<CafeManagementDbContext>();

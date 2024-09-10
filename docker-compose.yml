@@ -26,3 +26,26 @@ services:
     #   - /app/node_modules
     stdin_open: true
     tty: true
+
+  mysql:
+    image: mysql:8.0
+    container_name: cafehub-mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: cafehub_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - my_network
+
+volumes:
+  mysql_data:
+
+networks:
+  my_network:
+    driver: bridge

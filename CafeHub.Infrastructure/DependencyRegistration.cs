@@ -3,6 +3,7 @@ using CafeHub.Infrastructure.Interceptors;
 using CafeHub.Infrastructure.Providers;
 using CafeHub.Infrastructure.Seeds;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,7 +39,8 @@ namespace CafeHub.Infrastructure
                 ));
             }
 
-             serviceCollection.AddScoped<ICafeManagementDbContext>(provider => provider.GetRequiredService<CafeManagementDbContext>());
+            serviceCollection.AddScoped<ICafeManagementDbContext>(provider => provider.GetRequiredService<CafeManagementDbContext>());
+            serviceCollection.AddSingleton<IDesignTimeDbContextFactory<CafeManagementDbContext>, CafeManagementDbContextFactory>();
 
             return serviceCollection;
         }

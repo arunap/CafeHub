@@ -1,0 +1,4 @@
+# run on CafeHub.Api Project Folder
+dotnet ef migrations add InitialTableCreations --project ../CafeHub.Infrastructure --startup-project .
+
+dotnet ef database update
