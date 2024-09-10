@@ -1,11 +1,15 @@
+using CafeHub.Application.Commands.Employee;
 using CafeHub.Core.Entities;
 using CafeHub.Core.Enums;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CafeHub.Infrastructure.Seeds
 {
     public class EmployeeDataInitializer
     {
+        private readonly IMediator _mediator;
+
         private static readonly List<Employee> employees = new()
         {
             new Employee { Id = "E1", Name = "Alice Smith", EmailAddress = "alice.smith@example.com", PhoneNumber = "555-1234", Gender = Gender.Female },
@@ -39,61 +43,39 @@ namespace CafeHub.Infrastructure.Seeds
             new Employee { Id = "E29", Name = "Clara Scott", EmailAddress = "clara.scott@example.com", PhoneNumber = "555-4568", Gender = Gender.Female },
             new Employee { Id = "E30", Name = "David King", EmailAddress = "david.king@example.com", PhoneNumber = "555-5670", Gender = Gender.Male }
         };
+
         private readonly CafeManagementDbContext context;
-        public EmployeeDataInitializer(CafeManagementDbContext context) => this.context = context;
+        public EmployeeDataInitializer(CafeManagementDbContext context, IMediator mediator)
+        {
+            this.context = context;
+            _mediator = mediator;
+        }
 
         public async Task SeedAsync()
         {
+            Random random = new Random();
+            List<Cafe> cafes = context.Cafes.ToList();
+
             if (!await context.Employees.AnyAsync())
             {
-                await context.Employees.AddRangeAsync(employees);
-                await context.SaveChangesAsync();
+                employees.ForEach(async emp =>
+                {
+                    // Get a random index
+                    int randomIndex = random.Next(cafes.Count);
+                    Cafe randomCafe = cafes[randomIndex];
+                    Guid tempCafeId = randomCafe.Id;
+
+                    await _mediator.Send(new CreateEmployeeCommand
+                    {
+                        EmailAddress = emp.EmailAddress,
+                        Name = emp.Name,
+                        PhoneNumber = emp.PhoneNumber,
+                        Gender = emp.Gender,
+                        CafeId = tempCafeId
+                    });
+                });
+
             }
-
-            if (!await context.CafeEmployees.AnyAsync())
-                await SetEmployeeCafeAsync();
-        }
-
-        private async Task SetEmployeeCafeAsync()
-        {
-            var cafes = await context.Cafes.ToListAsync();
-            var cafeEmployees = new List<CafeEmployee>
-            {
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E1", CafeId = cafes[0].Id, StartDate = new DateOnly(2024, 1, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E2", CafeId = cafes[1].Id, StartDate = new DateOnly(2024, 2, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E3", CafeId = cafes[2].Id, StartDate = new DateOnly(2024, 3, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E4", CafeId = cafes[3].Id, StartDate = new DateOnly(2024, 4, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E5", CafeId = cafes[4].Id, StartDate = new DateOnly(2024, 5, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E6", CafeId = cafes[5].Id, StartDate = new DateOnly(2024, 6, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E7", CafeId = cafes[6].Id, StartDate = new DateOnly(2024, 7, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E8", CafeId = cafes[7].Id, StartDate = new DateOnly(2024, 8, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E9", CafeId = cafes[8].Id, StartDate = new DateOnly(2024, 9, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E10", CafeId = cafes[0].Id, StartDate = new DateOnly(2023, 10, 1), EndDate = new DateOnly(2024, 5, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E11", CafeId = cafes[10].Id, StartDate = new DateOnly(2023, 11, 1), EndDate = new DateOnly(2024, 6, 1) },
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E12", CafeId = cafes[1].Id, StartDate = new DateOnly(2024, 1, 1)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E13", CafeId = cafes[1].Id, StartDate = new DateOnly(2024, 1, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E14", CafeId = cafes[1].Id, StartDate = new DateOnly(2024, 2, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E15", CafeId = cafes[1].Id, StartDate = new DateOnly(2024, 3, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E16", CafeId = cafes[0].Id, StartDate = new DateOnly(2024, 4, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E17", CafeId = cafes[1].Id, StartDate = new DateOnly(2024, 5, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E18", CafeId = cafes[2].Id, StartDate = new DateOnly(2024, 6, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E19", CafeId = cafes[3].Id, StartDate = new DateOnly(2024, 7, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E20", CafeId = cafes[4].Id, StartDate = new DateOnly(2024, 8, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E21", CafeId = cafes[5].Id, StartDate = new DateOnly(2024, 9, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E22", CafeId = cafes[6].Id, StartDate = new DateOnly(2024, 2, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E23", CafeId = cafes[7].Id, StartDate = new DateOnly(2024, 2, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E24", CafeId = cafes[8].Id, StartDate = new DateOnly(2023, 2, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E25", CafeId = cafes[9].Id, StartDate = new DateOnly(2024, 1, 30)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E26", CafeId = cafes[10].Id, StartDate = new DateOnly(2024, 2, 28)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E27", CafeId = cafes[11].Id, StartDate = new DateOnly(2024, 3, 15)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E28", CafeId = cafes[12].Id, StartDate = new DateOnly(2024, 4, 10)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E29", CafeId = cafes[13].Id, StartDate = new DateOnly(2024, 5, 5)},
-                new CafeEmployee { Id = Guid.NewGuid(), EmployeeId = "E30", CafeId = cafes[14].Id, StartDate = new DateOnly(2024, 6, 20)}
-            };
-
-            await context.CafeEmployees.AddRangeAsync(cafeEmployees);
-            await context.SaveChangesAsync();
-
         }
     };
 

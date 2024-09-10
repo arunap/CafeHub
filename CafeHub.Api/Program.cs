@@ -38,8 +38,8 @@ if (app.Environment.IsDevelopment())
     var cafeSeeds = sp.ServiceProvider.GetRequiredService<CafeDataInitializer>();
     await cafeSeeds.SeedAsync();
 
-    // var employeeSeeds = sp.ServiceProvider.GetRequiredService<EmployeeDataInitializer>();
-    // await employeeSeeds.SeedAsync();
+    var employeeSeeds = sp.ServiceProvider.GetRequiredService<EmployeeDataInitializer>();
+    await employeeSeeds.SeedAsync();
 
 }
 
