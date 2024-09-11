@@ -154,8 +154,8 @@ const AddEditEmployee = () => {
           rules={{
             required: "Phone number is required",
             pattern: {
-              value: /^[89]\d{7}$/,
-              message: "Invalid Singapore phone number",
+              value: /^\+65\d{8}$/,
+              message: "Phone number must be a valid Singapore number starting with +65 and followed by 8 digits.",
             },
           }}
         />
