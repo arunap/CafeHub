@@ -50,7 +50,7 @@ const AddEditCafe = () => {
   const { data: cafeItem } = useQuery({ queryKey: ["cafe", cafeId], queryFn: fetchCafe, enabled: isEdit });
 
   const { control, handleSubmit, reset } = useForm({
-    defaultValues: { name: "Cafe 23", description: "Cafe 23", logo: "", location: "Cafe 23" },
+    defaultValues: { name: "", description: "", logo: "", location: "" },
   });
 
   // Set the default values once data is fetched
