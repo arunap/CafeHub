@@ -36,7 +36,7 @@ namespace CafeHub.Api.Controllers
 
         // POST: api/Cafe
         [HttpPost("Cafe")]
-        public async Task<ActionResult<CafeModel>> PostCafe(CreateCafeCommand command)
+        public async Task<ActionResult<CafeModel>> PostCafe([FromBody] CreateCafeCommand command)
         {
             var insertedId = await _mediator.Send(command);
 
