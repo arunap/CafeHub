@@ -49,6 +49,7 @@ if (app.Environment.IsDevelopment())
     await employeeSeeds.SeedAsync();
 
 }
+app.UseStaticFiles();
 
 app.UseCors("DefaultFrontEndClient");
 

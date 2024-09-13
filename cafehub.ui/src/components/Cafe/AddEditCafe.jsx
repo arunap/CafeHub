@@ -1,43 +1,12 @@
 import { Box, Button, FormControl, FormLabel, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { Input } from "@mui/material";
 import ReusableTextbox from "../FormControls/ReusableTextbox";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { showNotification } from "../../store/notificationSlice";
-
-// Define the mutation function
-const insertCafeToDb = async (newCafe) => {
-  const response = await fetch("http://localhost:9000/api/cafe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newCafe),
-  });
-
-  if (!response.ok) throw new Error("Failed to create Cafe");
-  return response.json();
-};
-
-const updateCafeToDb = async ({ id, data }) => {
-  const response = await fetch(`http://localhost:9000/api/cafe/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) throw new Error("Failed to update Cafe");
-  if (response.status === 204) return null; // No content to return
-  return response.json();
-};
-
-const fetchCafe = async ({ queryKey }) => {
-  const [, cafeId] = queryKey;
-  const response = await fetch(`http://localhost:9000/api/cafe/${cafeId}`);
-  if (!response.ok) throw new Error("Failed to fetch cafe");
-  return response.json();
-};
+import { useGetCafeByCafeIdQuery } from "../../services/queries";
+import { useCreateCafeFn, useUpdateCafeFn, useUploadCageLogoFn } from "../../services/mutations";
 
 const AddEditCafe = () => {
   const dispatch = useDispatch();
@@ -45,9 +14,8 @@ const AddEditCafe = () => {
 
   const { cafeId } = useParams({ strict: false });
   const isEdit = !!cafeId;
-
   // If in edit mode, fetch the cafe's information and prefill the form
-  const { data: cafeItem } = useQuery({ queryKey: ["cafe", cafeId], queryFn: fetchCafe, enabled: isEdit });
+  const { data: cafeItem } = useGetCafeByCafeIdQuery(cafeId, isEdit);
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { name: "", description: "", logo: "", location: "" },
@@ -61,33 +29,27 @@ const AddEditCafe = () => {
   }, [cafeItem, reset]);
 
   // Mutation to submit form data
-  const { mutate: insertCafeMutateFn } = useMutation({
-    mutationFn: insertCafeToDb,
-    mutationKey: "insertCafeToDb",
-    onSuccess: () => {
-      reset();
-      dispatch(showNotification({ message: "Cafe registered successfully!", severity: "success", duration: 3000 }));
-    },
-    onError: (error) => dispatch(showNotification({ message: "Error registering cafe.", severity: "error", duration: 3000 })),
-  });
+  const createMutateFn = useCreateCafeFn();
+  const updateMutateFn = useUpdateCafeFn();
+  const uploadCageLogoFn = useUploadCageLogoFn();
 
-  const { mutate: updateCafeMutateFn } = useMutation({
-    mutationFn: updateCafeToDb,
-    mutationKey: "updateCafeToDb",
-    onSuccess: () => {
-      reset();
-      dispatch(showNotification({ message: "Cafe registered successfully!", severity: "success", duration: 3000 }));
-      navigate({ to: "/cafe" });
-    },
-    onError: (error) => {
-      console.log(error);
-      dispatch(showNotification({ message: "Error registering cafe.", severity: "error", duration: 3000 }));
-    },
-  });
+  const insertCafeDataToApi = async (data) => {
+    if (isEdit) await updateMutateFn.mutateAsync({ id: cafeId, data });
+    else await createMutateFn.mutateAsync(data);
+    navigate({ to: "/cafe" });
+  };
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
+  };
 
-  const onSubmit = (data) => {
-    if (isEdit) updateCafeMutateFn({ id: cafeId, data });
-    else insertCafeMutateFn(data);
+  const onSubmit = async (formData) => {
+    if (file && fileName) {
+      const data = await uploadCageLogoFn.mutateAsync({ file, fileName });
+      insertCafeDataToApi({ ...formData, logo: data.imageUrl });
+    } else insertCafeDataToApi(formData);
   };
 
   return (
@@ -124,12 +86,10 @@ const AddEditCafe = () => {
         {/* Image Upload Field */}
         <FormControl fullWidth style={{ marginTop: "20px" }}>
           <FormLabel>Upload Profile Picture</FormLabel>
-          <Controller
-            name="logo"
-            control={control}
-            render={({ field }) => <Input type="file" onChange={(e) => field.onChange(e.target.files[0])} inputProps={{ accept: "image/*" }} />}
-          />
+          <Controller name="logo" control={control} render={({ field }) => <Input type="file" onChange={handleFileChange} inputProps={{ accept: "image/*" }} />} />
         </FormControl>
+        {/* <FormLabel>Upload Profile Picture</FormLabel>
+        <input type="file" onChange={handleFileChange} /> */}
 
         {/* Location Field */}
         <ReusableTextbox

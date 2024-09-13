@@ -1,30 +1,29 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Box, Button, Typography, TextField, IconButton, Divider, Avatar } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Box, Button, Typography, TextField, IconButton, Avatar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { AgGridReact } from "ag-grid-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
 import DeleteConfirmation from "../FormControls/DeleteConfirmation";
-import { deepOrange } from "@mui/material/colors";
-
-// API call to fetch cafes
-const fetchCafes = async () => {
-  const response = await fetch("http://localhost:9000/api/cafes");
-  if (!response.ok) throw new Error("Failed to fetch cafes");
-  return response.json();
-};
+import { useGetCafesByLocationQuery } from "../../services/queries";
+import { CAFE_LOGO_URL } from "../../common/global";
 
 const Cafe = () => {
-  const navigate = useNavigate();
+  // set location filter
+  const [locationFilter, setLocationFilter] = React.useState("");
+  const [cafeLocation, setCafeLocation] = React.useState("");
 
+  // set delete confirmation pop up settings
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [entityId, setEntityId] = useState(null);
   const [entityType, setEntityType] = useState("");
+
+  const queryClient = useQueryClient();
 
   const handleOpenDialog = (id, type) => {
     setEntityId(id);
@@ -36,10 +35,20 @@ const Cafe = () => {
     setIsDialogOpen(false);
     setEntityId(null);
     setEntityType("");
+
+    queryClient.invalidateQueries({ queryKey: ["cafesByLocation"] });
   };
 
-  const [locationFilter, setLocationFilter] = React.useState("");
-  const { data: cafes, isLoading, error } = useQuery({ queryKey: ["cafes", locationFilter], queryFn: fetchCafes });
+  // Debounced API call function
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setCafeLocation(locationFilter);
+    }, 1000); // 500ms debounce
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [locationFilter]);
+
+  const { data: cafes, isLoading: isLoading, error: error } = useGetCafesByLocationQuery(cafeLocation);
 
   const columns = [
     // { headerName: "Logo", field: "logo", autoHeight: true, cellRenderer: (params) => <img src={params.value} alt="logo" style={{ height: "50px" }} />, flex: 1 },
@@ -49,12 +58,12 @@ const Cafe = () => {
       autoHeight: true,
       cellRenderer: (params) => (
         <Avatar
-          src={params.value}
+          src={`${CAFE_LOGO_URL}/${params.data.logo}`}
           alt={params.value}
           sx={{
-            bgcolor: "#f0f0f0", 
-            width: 40, 
-            height: 40, 
+            bgcolor: "#f0f0f0",
+            width: 40,
+            height: 40,
             borderRadius: "50%",
             margin: "5px",
           }}
@@ -92,8 +101,6 @@ const Cafe = () => {
     },
   ];
 
-  const filteredCafes = cafes?.filter((cafe) => cafe.location.toLowerCase().includes(locationFilter.toLowerCase()));
-
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <DeleteConfirmation open={isDialogOpen} handleClose={handleCloseDialog} entityId={entityId} entityType={entityType} />
@@ -113,7 +120,7 @@ const Cafe = () => {
         <Box className="ag-theme-alpine" style={{ height: "500px", width: "100%" }}>
           <AgGridReact
             domLayout="autoHeight"
-            rowData={filteredCafes}
+            rowData={cafes}
             columnDefs={columns}
             defaultColDef={{ flex: 1, minWidth: 100, resizable: true }}
             pagination={true}

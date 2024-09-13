@@ -49,9 +49,6 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
     stdin_open: true
     tty: true
 

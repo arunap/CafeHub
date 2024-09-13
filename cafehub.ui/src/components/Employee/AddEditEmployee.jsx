@@ -1,51 +1,14 @@
 import React, { useEffect } from "react";
 import { TextField, Button, Box, Typography, FormControlLabel, RadioGroup, Radio, FormLabel } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useForm, Controller } from "react-hook-form";
 
 import ReusableTextbox from "../FormControls/ReusableTextbox";
-import { showNotification } from "../../store/notificationSlice";
 import { useDispatch } from "react-redux";
-
-// Define the mutation function
-const insertEmployeeToDb = async (newEmployee) => {
-  const response = await fetch("http://localhost:9000/api/employee", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newEmployee),
-  });
-
-  if (!response.ok) throw new Error("Failed to create Employee");
-  return response.json();
-};
-
-const updateEmployeeToDb = async ({ id, data }) => {
-  const response = await fetch(`http://localhost:9000/api/employee/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) throw new Error("Failed to update Employee");
-  if (response.status === 204) return null; // No content to return
-  return response.json();
-};
-
-const fetchEmployee = async ({ queryKey }) => {
-  const [, employeeId] = queryKey;
-  const response = await fetch(`http://localhost:9000/api/Employee/${employeeId}`);
-  if (!response.ok) throw new Error("Failed to fetch Employee");
-  return response.json();
-};
-
-const fetchCafes = async () => {
-  const response = await fetch("http://localhost:9000/api/cafes");
-  if (!response.ok) throw new Error("Failed to fetch Cafes");
-  return response.json();
-};
+import { useGetCafesQuery, useGetEmployeesByEmployeeIdQuery } from "../../services/queries";
+import { useCreateEmployeeFn, useUpdateEmployeeFn } from "../../services/mutations";
 
 const AddEditEmployee = () => {
   const dispatch = useDispatch();
@@ -55,8 +18,8 @@ const AddEditEmployee = () => {
   const isEdit = !!employeeId;
 
   // If in edit mode, fetch the cafe's information and prefill the form
-  const { data: cafeData } = useQuery({ queryKey: ["fetchCafes"], queryFn: fetchCafes });
-  const { data: employeeItem } = useQuery({ queryKey: ["employee", employeeId], queryFn: fetchEmployee, enabled: isEdit && !!cafeData });
+  const { data: cafeData, isLoading } = useGetCafesQuery();
+  const { data: employeeItem } = useGetEmployeesByEmployeeIdQuery(employeeId, isEdit && !!cafeData);
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -70,7 +33,6 @@ const AddEditEmployee = () => {
 
   // Set the default values once data is fetched
   useEffect(() => {
-    debugger;
     if (!isEdit && cafeData) {
       const updatedFormValues = { cafeId: cafeData[0]["id"], name: "", emailAddress: "", phoneNumber: "", gender: "0" };
       reset(updatedFormValues);
@@ -81,37 +43,16 @@ const AddEditEmployee = () => {
   }, [employeeItem, cafeData, reset]);
 
   // Mutation to submit form data
-  const { isLoading, mutate: insertEmployeeMutateFn } = useMutation({
-    mutationFn: insertEmployeeToDb,
-    onSuccess: () => {
-      reset();
-      dispatch(showNotification({ message: "Employee registered successfully!", severity: "success", duration: 3000 }));
-      navigate({ to: "/employee" });
-    },
-    onError: (error) => {
-      console.log(error);
-      dispatch(showNotification({ message: "Error registering employee.", severity: "error", duration: 3000 }));
-    },
-  });
+  const createMutateFn = useCreateEmployeeFn();
+  const updateMutateFn = useUpdateEmployeeFn();
 
-  const { mutate: updateEmployeeMutateFn } = useMutation({
-    mutationFn: updateEmployeeToDb,
-    mutationKey: "updateEmployeeToDb",
-    onSuccess: () => {
-      reset();
-      dispatch(showNotification({ message: "Employee updated successfully!", severity: "success", duration: 3000 }));
-      navigate({ to: "/employee" });
-    },
-    onError: (error) => {
-      console.log(error);
-      dispatch(showNotification({ message: "Error updating Employee.", severity: "error", duration: 3000 }));
-    },
-  });
-
-  const onSubmit = (data) => {
-    debugger;
-    if (isEdit) updateEmployeeMutateFn({ id: employeeId, data });
-    else insertEmployeeMutateFn(data);
+  const onSubmit = async (data) => {
+    if (isEdit) {
+      await updateMutateFn.mutateAsync({ id: employeeId, data });
+    } else {
+      await createMutateFn.mutateAsync(data);
+    }
+    navigate({ to: "/employee" });
   };
 
   return (

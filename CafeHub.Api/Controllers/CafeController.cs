@@ -64,5 +64,14 @@ namespace CafeHub.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("Cafe/UploadCafePhoto")]
+        public async Task<IActionResult> UploadCafePhoto([FromForm] UploadCafePhotoCommand command)
+        {
+            var result = await _mediator.Send(command);
+            if (string.IsNullOrEmpty(result)) return BadRequest("Error in file uploading...");
+            var imageData = new { ImageUrl = result };
+            return Ok(imageData);
+        }
     }
 }
