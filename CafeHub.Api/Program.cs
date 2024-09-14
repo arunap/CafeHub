@@ -3,6 +3,7 @@ using CafeHub.Application;
 using CafeHub.Application.Common.Contracts;
 using CafeHub.Infrastructure;
 using CafeHub.Infrastructure.Seeds;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,26 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ILoggedInUserService, LoggedInUserService>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(m => m.Value.Errors.Count > 0)
+                .SelectMany(x => x.Value.Errors)
+                .Select(x => x.ErrorMessage);
+
+            var response = new
+            {
+                Success = false,
+                Message = "Validation errors occurred",
+                Errors = errors
+            };
+
+            return new BadRequestObjectResult(response);
+        };
+    }); ;
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

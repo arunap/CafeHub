@@ -8,7 +8,7 @@ namespace CafeHub.Application.Commands.Cafe
         {
             RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Name is required.")
-            .Must(x => x.Length > 6 && x.Length < 10).WithMessage("Minimum 6 character and max 10 characters");
+            .Must(x => x.Length >= 6 && x.Length <= 10).WithMessage("Minimum 6 character and max 10 characters");
 
             RuleFor(c => c.Description)
             .NotEmpty().WithMessage("Description is required.")
