@@ -60,10 +60,11 @@ namespace CafeHub.Infrastructure.Seeds
                     Cafe randomCafe = cafes[randomIndex];
                     Guid tempCafeId = randomCafe.Id;
 
+                    int randomDays = random.Next(maxValue: 10);
                     emp.CafeEmployees.Add(new CafeEmployee
                     {
                         Cafe = randomCafe,
-                        StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-5)),
+                        StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-randomDays)),
                     });
                 });
 

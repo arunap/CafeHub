@@ -10,7 +10,7 @@ namespace CafeHub.Application.Commands.Employee
 {
     public class CreateEmployeeCommand : IRequest<string>
     {
-        public Guid CafeId { get; set; }
+        public Guid? CafeId { get; set; }
         public string Name { get; set; }
         public string EmailAddress { get; set; }
         public string PhoneNumber { get; set; }
@@ -49,12 +49,15 @@ namespace CafeHub.Application.Commands.Employee
                 PhoneNumber = request.PhoneNumber,
                 Gender = request.Gender,
                 Name = request.Name,
-                CafeEmployees = new List<CafeEmployee>{
-                    new() {
-                    CafeId = request.CafeId,
-                    StartDate = _dateTimeProvider.DateOnly,
-                }}
+
             };
+            if (request.CafeId.HasValue && request.CafeId != Guid.Empty)
+            {
+                employee.CafeEmployees = new List<CafeEmployee>
+                {
+                    new() { CafeId = request.CafeId.Value, StartDate = _dateTimeProvider.DateOnly, }
+                };
+            }
 
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();

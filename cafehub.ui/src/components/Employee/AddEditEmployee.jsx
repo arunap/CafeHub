@@ -26,18 +26,16 @@ const AddEditEmployee = () => {
       name: "", // Ensure name is controlled
       emailAddress: "", // Ensure email is controlled
       phoneNumber: "", // Ensure phone number is controlled
-      cafeId: "", // Ensure cafeName is controlled
+      cafeId: "-1", // Ensure cafeName is controlled
       gender: "0", // Ensure gender is controlled
     },
   });
 
   // Set the default values once data is fetched
   useEffect(() => {
-    if (!isEdit && cafeData) {
-      const updatedFormValues = { cafeId: cafeData[0]["id"], name: "", emailAddress: "", phoneNumber: "", gender: "0" };
-      reset(updatedFormValues);
-    } else if (employeeItem) {
-      const updatedFormValues = { cafeId: cafeData.filter((x) => x.name === employeeItem.cafeName)[0]["id"], ...employeeItem };
+    if (employeeItem) {
+      const savedCafe = cafeData.filter((x) => x.name === employeeItem.cafeName)[0];
+      const updatedFormValues = { cafeId: savedCafe == null ? "-1" : savedCafe["id"], ...employeeItem };
       reset(updatedFormValues);
     } // Populate the form with the fetched data
   }, [employeeItem, cafeData, reset]);
@@ -47,6 +45,7 @@ const AddEditEmployee = () => {
   const updateMutateFn = useUpdateEmployeeFn();
 
   const onSubmit = async (data) => {
+    if (data.cafeId === "-1") data = { ...data, cafeId: null }; // reset the cafeId
     if (isEdit) {
       await updateMutateFn.mutateAsync({ id: employeeId, data });
     } else {
@@ -107,8 +106,13 @@ const AddEditEmployee = () => {
             name="cafeId"
             control={control}
             rules={{ required: "Assigned Café is required" }}
-            render={({ field }) => (
-              <TextField select label="Assign Cafe" {...field} variant="outlined" fullWidth error={!!field.error} helperText={field.error?.message} value={field.value}>
+            render={({ field, fieldState: { error } }) => (
+              <TextField select label="Assign Cafe" {...field} variant="outlined" fullWidth error={!!error} helperText={error?.message}>
+                {/* Default placeholder option */}
+                <MenuItem value="-1">
+                  <em>--Select a Cafe--</em>
+                </MenuItem>
+                {/* Map the cafeData options */}
                 {cafeData &&
                   cafeData.map((option) => (
                     <MenuItem key={option.id} value={option.id}>

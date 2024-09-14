@@ -8,8 +8,8 @@ namespace CafeHub.Application.Commands.Employee
         public CreateEmployeeCommandValidator()
         {
             // CafeId validation
-            RuleFor(x => x.CafeId)
-                .NotEmpty().WithMessage("CafeId is required.");
+            // RuleFor(x => x.CafeId)
+            //     .NotEmpty().WithMessage("CafeId is required.");
 
             // Name validation
             RuleFor(x => x.Name)

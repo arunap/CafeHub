@@ -10,8 +10,8 @@ namespace CafeHub.Application.Commands.Employee
             RuleFor(x => x.Id)
                 .NotEmpty().WithMessage("Employee ID is required.");
 
-            RuleFor(x => x.CafeId)
-                .NotEmpty().WithMessage("Cafe ID is required.");
+            // RuleFor(x => x.CafeId)
+            //     .NotEmpty().WithMessage("Cafe ID is required.");
 
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")

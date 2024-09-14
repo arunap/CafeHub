@@ -8,7 +8,7 @@ namespace CafeHub.Application.Commands.Employee
     public class UpdateEmployeeCommand : IRequest
     {
         public string Id { get; set; }
-        public Guid CafeId { get; set; }
+        public Guid? CafeId { get; set; }
         public string Name { get; set; }
         public string EmailAddress { get; set; }
         public string PhoneNumber { get; set; }
@@ -37,21 +37,24 @@ namespace CafeHub.Application.Commands.Employee
             employee.PhoneNumber = request.PhoneNumber;
             employee.Gender = request.Gender;
 
-            // end the existing assignment if the cafe is different
-            employee.CafeEmployees.Where(c => c.CafeId != request.CafeId).ToList()
-            .ForEach(c =>
+            if (request.CafeId.HasValue && request.CafeId != Guid.Empty)
             {
-                c.EndDate = _dateTimeProvider.DateOnly;
-                _context.CafeEmployees.Remove(c);
-            });
-
-            if (employee.CafeEmployees.Any(c => c.CafeId != request.CafeId))
-            {
-                employee.CafeEmployees.Add(new Core.Entities.CafeEmployee
+                // end the existing assignment if the cafe is different
+                employee.CafeEmployees.Where(c => c.CafeId != request.CafeId.Value).ToList()
+                .ForEach(c =>
                 {
-                    CafeId = request.CafeId,
-                    StartDate = _dateTimeProvider.DateOnly,
+                    c.EndDate = _dateTimeProvider.DateOnly;
+                    _context.CafeEmployees.Remove(c);
                 });
+
+                if (employee.CafeEmployees.Count == 0 || employee.CafeEmployees.Any(c => c.CafeId != request.CafeId))
+                {
+                    employee.CafeEmployees.Add(new Core.Entities.CafeEmployee
+                    {
+                        CafeId = request.CafeId.Value,
+                        StartDate = _dateTimeProvider.DateOnly,
+                    });
+                }
             }
 
             await _context.SaveChangesAsync();
