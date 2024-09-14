@@ -2,6 +2,8 @@
 
 This project is a comprehensive solution for a Cafe Management System, utilizing a range of technologies including .NET 6, React JS, and Docker. This README provides instructions for running the entire solution using Docker Compose.
 
+![Cafe_Management_System](https://github.com/user-attachments/assets/da30b4bd-5571-4d00-a719-14ddeab22d93)
+
 ## Prerequisites
 
 Before running the Docker Compose setup, ensure you have the following installed:
@@ -49,6 +51,10 @@ The solution includes the following projects:
 - **Frontend (React JS)**: Open your browser and navigate to `http://localhost:3000`.
 - **Backend (API)**: The API will be available at `http://localhost:9000/swagger`.
 
+![Cafe_Management_System_API](https://github.com/user-attachments/assets/3973f668-fbdc-442d-b35f-26729fed6541)
+
+![Cafe_Management_System_Docker](https://github.com/user-attachments/assets/4d48655d-d93b-4ecb-a5c9-a1e9b88fe7d6)
+
 ## Environment Variables
 
 Configure any required environment variables in a `.env` file in the root directory. Docker Compose will automatically use these variables.
@@ -57,6 +63,7 @@ Configure any required environment variables in a `.env` file in the root direct
 
 - **Port Conflicts**: Ensure that the ports specified in `docker-compose.yml` are not already in use by other services.
 - **Build Issues**: If you encounter build issues, try running `docker-compose build` separately to get more detailed error messages.
+- **Api Not Running**: If you notice that API is not up, you may manually start cafehub-api container in docker desktop.
 
 ## Contributing
 
